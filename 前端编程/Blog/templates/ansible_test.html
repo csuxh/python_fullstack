@@ -1,0 +1,38 @@
+{#{% load staticfiles %}#}
+<!DOCTYPE html><html lang="en">
+    <head>  
+        <base href="/">
+        <meta charset="utf-8">
+        <title>demo1</title>
+
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+        <meta name="description" content="">  
+        <meta name="author" content="">
+        <!--append watch to the browser URL, then refresh the page. -->
+        <link href="/static/css/libs/bootstrap.min.css" rel="stylesheet">
+    </head>    
+    <body ng-app="myApp">
+        <div class="container-fluid">
+            <div class="col-md-12 column">
+            </div>
+            <div class="col-md-12" ng-controller="demo_test1_ctrl">
+    <div class="row col-md-12">
+        <br />
+        <button class="btn btn btn-primary col-md-offset-5" ng-click="touch_file()">使用ansible创建文件</button>
+    </div>
+    </div>
+        </div>
+    
+        <!-- put here load faster -->
+        <!-- here is the main js file that should be load -->
+        <script type="text/javascript" src="/static/js/libs/jquery/jquery.min.js"></script>
+        <script type="text/javascript" src="/static/js/libs/angular/angular.min.js"></script>
+        <script type="text/javascript" src="/static/js/libs/bootstrap/bootstrap.min.js"></script>
+        <script type="text/javascript" src="/static/js/libs/underscore/Underscore.js"></script>
+
+        <script type="text/javascript" src="/static/js/angular-factory/main.js"></script>
+
+        <!-- here is the other page's js -->
+        <script type="text/javascript" src="/static/js/angular-controller/demo_ansible/demo_test1_ctrl.js"></script>
+    </body>
+</html>

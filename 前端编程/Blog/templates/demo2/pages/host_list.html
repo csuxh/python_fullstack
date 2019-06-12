@@ -1,0 +1,56 @@
+<div class="container">
+    <button id="host">host列表</button>
+    <div id="message">
+    </div>
+    <table class="table table-bordered table-striped table-hover">
+                    <thead>
+                        <tr class="info">
+                            <th class="col-md-2 text-muted">主机名称</th>
+                            <th class="col-md-2 text-muted">组名</th>
+                            <th class="col-md-1 text-muted">主机ip</th>
+                            <th class="col-md-1 text-muted">用户名</th>
+                            <th class="col-md-1 text-muted">端口</th>
+                            <th class="col-md-2 text-muted">机器类型</th>
+                        </tr>
+                    </thead>
+                    <tbody id = "host_info">
+{#                            <th class="col-md-2 text-muted">((j.name))</th>#}
+{#                            <th class="col-md-2 text-muted">((j.group))</th>#}
+{#                            <th class="col-md-1 text-muted">((j.ssh_host))</th>#}
+{#                            <th class="col-md-1 text-muted">((j.ssh_user))</th>#}
+{#                            <th class="col-md-1 text-muted">((j.ssh_port))</th>#}
+{#                            <th class="col-md-2 text-muted">((j.server_type))</th>#}
+                    </tbody>
+                </table>
+</div>
+
+<script src="/static/jquery-3.3.1.js"></script>
+<script src="/static/myJS/host_list.js"></script>
+{#<script>#}
+{#    $(document).ready(function () {#}
+        {# $("#host").on("click", function () { #}
+{#            $.ajax({#}
+{#                    url:"/demo2/ansible_host_api/",#}
+{#                    type:"GET",#}
+{#                    data:JSON.stringify({}),#}
+{#                    contentType: 'application/json', //默认: "application/x-www-form-urlencoded"#}
+{#                    dataType:'json',#}
+{#                    success:function(ret){#}
+{#                        var ss = '';#}
+{#                        for(var i=0; i < ret.length; i +=1){#}
+{#                            console.log(ret[i]);#}
+{#                            ss += '<tr><th>' + ret[i].name + '</th>' +#}
+{#                                '<th>' + ret[i].group + '</th>' +#}
+{#                                '<th>' + ret[i].ssh_host + '</th>' +#}
+{#                                '<th>' + ret[i].ssh_user + '</th>' +#}
+{#                                '<th>' + ret[i].ssh_port + '</th>' +#}
+{#                                '<th>' + ret[i].server_type + '</th></tr>' ;#}
+{#                        }#}
+{#                        console.log(ss)#}
+{#                        $('#host_info').html(ss);#}
+{#                    }#}
+{#                }#}
+{#            )#}
+{#        })#}
+{##}
+{#</script>#}

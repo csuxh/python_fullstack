@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>分页测试</title>
+    <link href="/static/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom styles for this template -->
+    <link href="/static/dashboard.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/fontawesome/css/font-awesome.min.css">
+</head>
+<body>
+<div class="container">
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>序号</th>
+            <th>id</th>
+            <th>名字</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for user in user_list %}
+            <tr>
+
+                    <th>{{ forloop.counter }}</th>
+                    <th>{{ user.id }}</th>
+                    <th>{{ user.name }}</th>
+
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <nav aria-label="Page navigation">
+      <ul class="pagination">
+{#        <li>#}
+{#          <a href="#" aria-label="Previous">#}
+{#            <span aria-hidden="true">&laquo;</span>#}
+{#          </a>#}
+{#        </li>#}
+          {{ html_page_list|safe }}
+{#        <li><a href="#">1</a></li>#}
+{#        <li><a href="#">2</a></li>#}
+{#        <li><a href="#">3</a></li>#}
+{#        <li><a href="#">4</a></li>#}
+{#        <li><a href="#">5</a></li>#}
+      </ul>
+    </nav>
+</div>
+
+</body>
+</html>

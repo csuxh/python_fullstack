@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Django模板</title>
+</head>
+<body>
+<h1>模板语言测试页面</h1>
+<p>自定义filter</p>
+{% load myfilter %}
+<p>{{ ss|addStr:"author:jackxia" }}</p>
+
+<p>自定义simpletag</p>
+{#{% load myfilter %}#}
+<p>{% myTag ss "hhhh"  "eee" %} </p>
+
+<p>自定义inclusion_tag</p>
+<p>{% ge_list 10 %}</p>
+
+<p>{{ test }}</p>
+{#这里冒号后面一定不能有空格#}
+<p>{{ name|default:"哈哈" }} </p>
+<p>{{ age|default:"999" }}</p>
+<p>{{ person_list|length }}</p>
+<p>{{ size|filesizeformat }}</p>
+<p>{{ ss|slice:"-3:" }}</p>
+<p>{{ now|date:"Y-m-d H:i:s" }}</p>
+<br/>
+<div>
+</body>
+</html>

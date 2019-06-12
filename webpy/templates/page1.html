@@ -1,0 +1,20 @@
+$# 模板注释
+$def with (name)
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link href="/static/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom styles for this template -->
+    <link href="/static/dashboard.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/fontawesome/css/font-awesome.min.css">
+</head>
+<body>
+$if name:
+    I just wanted to say <em>hello</em> to $name.
+$else:
+    <em>Hello</em>, world!
+
+</body>
+</html>

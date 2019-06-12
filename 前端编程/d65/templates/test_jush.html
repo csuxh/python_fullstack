@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>语法高亮</title>
+</head>
+<body>
+
+<h1>高亮测试</h1>
+<input type="text" value=""> 111
+<code class="jush-sql">
+select b.accounts_code, a.AE_AR_AGING_DAYS,  a.AI_AR_AGING_DAYS,
+a.FI_ACCOUNTS_NAME
+ from s_accounts_credit a, s_accounts b
+where a.ACCOUNTS_ID = b.ACCOUNTS_ID
+and a.AE_AR_AGING_DAYS is null
+and a.FI_ACCOUNTS_NAME like '%Express Trade Capital%' ;
+</code>
+
+<script type="text/javascript" src="jush.js"></script>
+<script type="text/javascript">
+jush.style('jush.css');
+jush.highlight_tag('code');
+</script>
+
+</body>
+</html>

@@ -1,0 +1,304 @@
+s9day117 
+
+内容回顾：
+	1. django和flask区别？
+		
+	2. flask
+		- 配置文件
+			- 使用
+			- 原理
+		- 路由系统
+			- 书写方式
+			- 参数
+		- 视图 
+			- CBV
+		- 蓝图 
+			- 目录结构划分
+			- 前缀
+			- 应用特殊装饰器
+		- 特殊装饰器
+	3. session实现原理
+		
+	4. threading.local 
+		
+今日内容概要：
+	1. 上下文管理：request
+	2. 上下文管理：session  
+	   其他：
+			- app
+			- g 
+	3. 第三方组件：flask-session
+	4. pymysql操作数据库
+	   数据库连接池 *** 
+	   
+内容详细：
+	前夕：
+		- 偏函数
+			import functools
+
+			def index(a1,a2):
+				return a1 + a2
+
+			# 原来的调用方式
+			# ret = index(1,23)
+			# print(ret)
+
+			# 偏函数，帮助开发者自动传递参数
+			new_func = functools.partial(index,666)
+			ret = new_func(1)
+			print(ret)
+		
+		- super和执行类的区别？
+			"""
+			class Base(object):
+
+				def func(self):
+					print('Base.func')
+
+			class Foo(Base):
+
+				def func(self):
+					# 方式一：根据mro的顺序执行方法
+					# super(Foo,self).func()
+					# 方式二：主动执行Base类的方法
+					# Base.func(self)
+
+					print('Foo.func')
+
+
+			obj = Foo()
+			obj.func()
+			"""
+			#################################### 
+			class Base(object):
+
+				def func(self):
+					super(Base, self).func()
+					print('Base.func')
+
+			class Bar(object):
+				def func(self):
+					print('Bar.func')
+
+			class Foo(Base,Bar):
+				pass
+
+			# 示例一
+			# obj = Foo()
+			# obj.func()
+			# print(Foo.__mro__)
+
+			# 示例二
+			# obj = Base()
+			# obj.func()
+		
+		- 面向对象中特殊方法 setattr/getattr注意事项：
+			class Foo(object):
+				def __init__(self):
+					# self.storage = {}
+					object.__setattr__(self,'storage',{})
+
+				def __setattr__(self, key, value):
+					print(key,value,self.storage)
+					
+
+
+			obj = Foo()
+			obj.xx = 123
+		
+		
+		- 基于列表实现栈 
+			
+			class Stack(object):
+
+				def __init__(self):
+					self.data = []
+
+				def push(self,val):
+					self.data.append(val)
+
+				def pop(self):
+					return self.data.pop()
+				
+				def top(self):
+					return self.data[-1]
+
+			_stack = Stack()
+
+			_stack.push('佳俊')
+			_stack.push('咸鱼')
+
+			print(_stack.pop())
+			print(_stack.pop())
+		
+		
+		- 全局变量只有在初次加载时执行
+		
+	1. 上下文管理：request
+		
+		a. 温大爷：wsig
+		b.   赵毅：
+					ctx = ReuqestContext(session,request)
+					ctx.push()
+		c.   刘松：LocalStack，把ctx对象添加到local中
+		d.   空调：Local
+					__storage__={
+						1321：{stack:[ctx,]}
+					}
+		
+	2. 上下文管理：session 
+		
+		a. 温大爷：wsig
+		b.   赵毅：
+					ctx = ReuqestContext(session=None,request)
+					ctx.push()
+		c.   刘松：LocalStack，把ctx对象添加到local中
+		d.   空调：Local
+					__storage__={
+						1321：{stack:[ctx,]}
+					}
+		e.   郭浩：通过刘松获取ctx中的session，给session赋值（从cookie中读取数据） => open_session 
+		
+	
+	3. flask-session 
+	
+		pip3 install flask-session 
+		
+		掌握：
+			- 使用
+				# by luffycity.com
+				import redis
+				from flask import Flask,request,session
+				from flask.sessions import SecureCookieSessionInterface
+				from flask_session import Session
+
+				app = Flask(__name__)
+
+				# app.session_interface = SecureCookieSessionInterface()
+				# app.session_interface = RedisSessionInterface()
+				app.config['SESSION_TYPE'] = 'redis'
+				app.config['SESSION_REDIS'] = redis.Redis(host='140.143.227.206',port=6379,password='1234')
+				Session(app)
+
+				@app.route('/login')
+				def login():
+					session['user'] = 'alex'
+					return 'asdfasfd'
+
+				@app.route('/home')
+				def index():
+					print(session.get('user'))
+
+					return '...'
+
+
+				if __name__ == '__main__':
+					app.run()
+			- 原理：
+				- session数据保存到redis
+					session:随机字符串1:q23asifaksdfkajsdfasdf
+					session:随机字符串2:q23asifaksdfkajsdfasdf
+					session:随机字符串3:q23asifaksdfkajsdfasdf
+					session:随机字符串4:q23asifaksdfkajsdfasdf
+					session:随机字符串5:q23asifaksdfkajsdfasdf
+				- 随机字符串返回给用户。
+					随机字符串
+				
+				
+				源码：
+					from flask_session import RedisSessionInterface
+				
+				
+	4. pymysql 
+	
+作业：代码统计系统
+	表结构设计：
+		用户表：
+			ID    用户名     密码    昵称
+		代码记录：
+			ID    用户ID   行数   日期 
+			                    
+	功能：
+		1. 用户登录 
+		2. 用户列表 
+			ID    用户名        选项
+	        1      华强     查看代码行数记录
+	        2      华强     查看代码行数记录
+	        3      华强     查看代码行数记录
+	        4      华强     查看代码行数记录
+	        5      华强     查看代码行数记录
+	        6      华强     查看代码行数记录
+		3. 用户代码记录 
+		
+		4. 上传自己代码[xx.py]
+		
+	要求：
+		1. session存储在redis
+		2. 上传时支持压缩文件或文件夹
+			- python如何实现文件夹解压
+			- 查看某个目录下的所有文件和文件夹
+			
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+		
+		
+		
+		
+		
+		
+	   
+	   
+	   
+	   
+	   
+	   
+	   
+	   
+	   
+	   
+	   
+	   
+	   
+	   
+	   
+	   
+	   

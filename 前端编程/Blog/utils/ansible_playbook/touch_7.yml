@@ -1,0 +1,4 @@
+- hosts: '{{ ansible_hosts }}'
+  tasks:
+  - name: touch file
+    shell: touch /tmp/ccc

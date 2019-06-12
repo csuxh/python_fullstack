@@ -1,0 +1,422 @@
+s9day115 Flask基础
+
+回顾：
+	1.谈谈你对django和flask的认识。
+
+	2.flask和django最大的不同点：request/session
+
+	3.flask知识点
+		- 模板+静态文件，app= Flask(__name__,....)
+		- 路由
+			@app.route('/index',methods=["GET"])
+		- 请求
+			request.form
+			request.args
+			request.method
+		- 响应
+			""
+			render
+			redirect
+		- session
+			session['xx'] = 123
+			session.get('xx')
+	4. 路飞总共有几个项目
+		- 管理后台
+		- 导师后台
+		- 主站
+
+	5. 路飞主站业务
+		- 课程
+			- 课程列表
+			- 课程详细
+			- 大纲、导师、推荐课程
+			- 价格策略
+			- 章节和课时
+			- 常见问题
+		- 深科技
+			- 文章列表
+			- 文章详细
+			- 收藏
+			- 评论
+			- 点赞
+		- 支付
+			- 购物车（4）
+			- 结算中心（3）
+			- 立即支付（1）
+			知识点：
+				- redis
+				- 支付宝
+				- 消息推送
+				- 构建数据结构
+				- 优惠券+贝里+支付宝
+		- 个人中心
+		- 课程中心
+
+	6. 播放视频：CC视频
+		- 加密
+		- 非加密
+
+
+今日内容：
+	1. 配置文件
+	2. 路由系统
+	3. 视图
+	4. 请求相关
+	5. 响应
+	6. 模板渲染
+	7. session
+	8. 闪现
+	9. 中间件
+	10. 蓝图（blueprint）
+	11. 特殊装饰器
+
+内容详细：
+	知识点：
+		- 给你一个路径 “settings.Foo”，可以找到类并获取去其中的大写的静态字段。
+
+			settings.py
+				class Foo:
+					DEBUG = True
+					TEST = True
+
+			xx.py
+				import importlib
+
+				path = "settings.Foo"
+
+				p,c = path.rsplit('.',maxsplit=1)
+				m = importlib.import_module(p)
+				cls = getattr(m,c)
+
+				# 如果找到这个类？
+				for key in dir(cls):
+					if key.isupper():
+						print(key,getattr(cls,key))
+	1. 配置文件
+
+		app.config.from_object("settings.DevelopmentConfig")
+
+
+		class Config(object):
+			DEBUG = False
+			TESTING = False
+			DATABASE_URI = 'sqlite://:memory:'
+
+
+		class ProductionConfig(Config):
+			DATABASE_URI = 'mysql://user@localhost/foo'
+
+
+		class DevelopmentConfig(Config):
+			DEBUG = True
+
+
+		class TestingConfig(Config):
+			TESTING = True
+	2. 路由系统
+		- endpoint,反向生成URL，默认函数名
+		- url_for('endpoint') / url_for("index",nid=777)
+		- 动态路由：
+			@app.route('/index/<int:nid>',methods=['GET','POST'])
+			def index(nid):
+				print(nid)
+				return "Index"
+
+	3. FBV
+
+
+	4. 请求相关
+		# 请求相关信息
+		# request.method
+		# request.args
+		# request.form
+		# request.values
+		# request.cookies
+		# request.headers
+		# request.path
+		# request.full_path
+		# request.script_root
+		# request.url
+		# request.base_url
+		# request.url_root
+		# request.host_url
+		# request.host
+		# request.files
+		# obj = request.files['the_file_name']
+		# obj.save('/var/www/uploads/' + secure_filename(f.filename))
+
+	5. 响应：
+			响应体：
+				return “asdf”
+				return jsonify({'k1':'v1'})
+				return render_template('xxx.html')
+				return redirect()
+
+			定制响应头：
+				obj = make_response("asdf")
+				obj.headers['xxxxxxx'] = '123'
+				obj.set_cookie('key', 'value')
+				return obj
+
+
+	示例程序：学生管理
+
+		版本一：
+			@app.route('/index')
+			def index():
+				if not session.get('user'):
+					return redirect(url_for('login'))
+				return render_template('index.html',stu_dic=STUDENT_DICT)
+		版本二：
+			import functools
+			def auth(func):
+				@functools.wraps(func)
+				def inner(*args,**kwargs):
+					if not session.get('user'):
+						return redirect(url_for('login'))
+					ret = func(*args,**kwargs)
+					return ret
+				return inner
+
+			@app.route('/index')
+			@auth
+			def index():
+				return render_template('index.html',stu_dic=STUDENT_DICT)
+
+			应用场景：比较少的函数中需要额外添加功能。
+
+		版本三：before_request
+			@app.before_request
+			def xxxxxx():
+				if request.path == '/login':
+					return None
+
+				if session.get('user'):
+					return None
+
+				return redirect('/login')
+
+
+	6. 模板渲染
+		- 基本数据类型：可以执行python语法，如：dict.get()  list['xx']
+		- 传入函数
+			- django，自动执行
+			- flask，不自动执行
+		- 全局定义函数
+			@app.template_global()
+			def sb(a1, a2):
+				# {{sb(1,9)}}
+				return a1 + a2
+
+			@app.template_filter()
+			def db(a1, a2, a3):
+				# {{ 1|db(2,3) }}
+				return a1 + a2 + a3
+		- 模板继承
+			layout.html
+				<!DOCTYPE html>
+				<html lang="zh-CN">
+				<head>
+					<meta charset="UTF-8">
+					<title>Title</title>
+					<meta name="viewport" content="width=device-width, initial-scale=1">
+				</head>
+				<body>
+					<h1>模板</h1>
+					{% block content %}{% endblock %}
+				</body>
+				</html>
+
+			tpl.html
+				{% extends "layout.html"%}
+
+
+				{% block content %}
+					{{users.0}}
+
+
+				{% endblock %}
+		- include
+
+
+			{% include "form.html" %}
+
+
+			form.html
+				<form>
+					asdfasdf
+					asdfasdf
+					asdf
+					asdf
+				</form>
+		- 宏
+			{% macro ccccc(name, type='text', value='') %}
+				<h1>宏</h1>
+				<input type="{{ type }}" name="{{ name }}" value="{{ value }}">
+				<input type="submit" value="提交">
+			{% endmacro %}
+
+			{{ ccccc('n1') }}
+
+			{{ ccccc('n2') }}
+
+		- 安全
+			- 前端： {{u|safe}}
+			- 前端： MarkUp("asdf")
+
+
+	7. session
+		当请求刚到来：flask读取cookie中session对应的值：eyJrMiI6NDU2LCJ1c2VyIjoib2xkYm95，将该值解密并反序列化成字典，放入内存以便视图函数使用。
+		视图函数：
+			@app.route('/ses')
+			def ses():
+				session['k1'] = 123
+				session['k2'] = 456
+				del session['k1']
+
+				return "Session"
+
+
+
+					session['xxx'] = 123
+					session['xxx']
+
+		当请求结束时，flask会读取内存中字典的值，进行序列化+加密，写入到用户cookie中。
+
+
+	8. 闪现，在session中存储一个数据，读取时通过pop将数据移除。
+		from flask import Flask,flash,get_flashed_messages
+		@app.route('/page1')
+		def page1():
+
+			flash('临时数据存储','error')
+			flash('sdfsdf234234','error')
+			flash('adasdfasdf','info')
+
+			return "Session"
+
+		@app.route('/page2')
+		def page2():
+			print(get_flashed_messages(category_filter=['error']))
+			return "Session"
+
+
+	9. 中间件
+		- call方法什么时候出发？
+			- 用户发起请求时，才执行。
+		- 任务：在执行call方法之前，做一个操作，call方法执行之后做一个操作。
+			class Middleware(object):
+				def __init__(self,old):
+					self.old = old
+
+				def __call__(self, *args, **kwargs):
+					ret = self.old(*args, **kwargs)
+					return ret
+
+
+			if __name__ == '__main__':
+				app.wsgi_app = Middleware(app.wsgi_app)
+				app.run()
+
+
+	10. 特殊装饰器
+
+		1. before_request
+
+		2. after_request
+
+			示例：
+				from flask import Flask
+				app = Flask(__name__)
+
+
+				@app.before_request
+				def x1():
+					print('before:x1')
+					return '滚'
+
+				@app.before_request
+				def xx1():
+					print('before:xx1')
+
+
+				@app.after_request
+				def x2(response):
+					print('after:x2')
+					return response
+
+				@app.after_request
+				def xx2(response):
+					print('after:xx2')
+					return response
+
+
+
+				@app.route('/index')
+				def index():
+					print('index')
+					return "Index"
+
+
+				@app.route('/order')
+				def order():
+					print('order')
+					return "order"
+
+
+				if __name__ == '__main__':
+
+					app.run()
+
+		3. before_first_request
+
+			from flask import Flask
+			app = Flask(__name__)
+
+			@app.before_first_request
+			def x1():
+				print('123123')
+
+
+			@app.route('/index')
+			def index():
+				print('index')
+				return "Index"
+
+
+			@app.route('/order')
+			def order():
+				print('order')
+				return "order"
+
+
+			if __name__ == '__main__':
+
+				app.run()
+
+
+		4. template_global
+
+		5. template_filter
+
+		6. errorhandler
+			@app.errorhandler(404)
+			def not_found(arg):
+				print(arg)
+				return "没找到"
+
+
+总结：
+	- 配置文件
+	- 路由
+	- 视图：FBV
+	- 请求
+	- 响应
+		obj = make_response("adfasdf")
+		obj.headers['x'] = asdfasdf
+		return obj
+	- 模板
+	- session
+	- flash
+	- 中间件
+	- 特殊装饰器

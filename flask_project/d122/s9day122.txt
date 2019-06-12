@@ -1,0 +1,440 @@
+s9day122 
+
+内容回顾：
+	第一部分：Flask部分
+		基础：
+			1. flask和django区别？
+			2. flask中配置文件？
+				使用app.config.from_object('路径.xx.path')
+				技术点：
+					- rsplit
+					- importlib 
+					- getattr
+				类似：django中间件
+			3. 路由系统
+				基于装饰器实现的路由系统。
+				技术点：	
+					- functools.wraps(func)，保留原函数的元信息。
+			4. 视图函数
+				FBV和CBV
+				技术点：	
+					- 反射
+			5. 请求：request
+			6. 响应：response
+				技术点：
+					- 封装 
+					
+			7. session、flash
+			
+			8. 蓝图 
+			
+			9. 装饰器
+			
+			10. 中间件 
+				
+		高级：
+			1. 上下文管理的实现？
+			
+			2. 为什么把上下文管理分成：
+				- 应用上下文：request/session
+				- 请求上下文: app/g 
+				
+				
+			3. Local的作用？
+				类似于threading.local的作用，但是是他的升级版（greentlet.get_current()）
+				__storage__ = {
+					1231: {},
+					1231: {}
+				}
+			4. LocalStack作用？
+				将Local中__storage__的值维护成一下结构：
+				__storage__ = {
+					1231: {stack:[],},
+					1231: {stack:[],}
+				}
+			5. 为什么要维护成一个栈？
+			
+			6. 为什么导入request，就可以使用？
+				每次执行request.xx方法时，会触发LocalProxy对象的__getattr__等方法，由方法每次动态的使用
+				LocalStack去Local中获取数据。
+				
+			如何学的？
+				- 网上找一些博客学习
+					- 春生博客
+				- 官方文档
+				- 源码
+
+		扩展：
+			1. flask-session 
+			2. DBUtils
+			3. wtforms
+			4. sqlalchemy
+			
+	第二部分：面向对象
+		1. 面向对象的理解？
+			
+			PS：
+				父类/子类
+				基类/派生类
+				
+		2. metaclass相关
+			- 默认类时有谁创建：type创建
+			- 类创建2中方式：
+				class Foo:pass 
+				type('Foo',(object,),{})
+			- 执行创建类的mytype
+				class Foo(metaclass=MyType):
+					# __metaclass__ = MyType
+					pass 
+				
+				MyType('Foo',(object,),{})
+			- 源码
+				如果类以基类中未指定metaclass:
+					- __new__
+					- __init__
+				如果类以基类中指定metaclass:
+					- 创建类
+						MyType.__init__ 
+					- 创建对象 
+						MyType.__call__ 
+							- __new__
+							- __init__
+			
+			
+		3. 令你印象深刻的事（好神奇）。
+			class Foo(object):
+				def __init__(self,name,age):
+					self.name = name
+					self.__age = age
+
+				def func(self):
+					print(self.__age)
+
+			obj = Foo('oldboy',50)
+			print(obj.name)
+			print(obj._Foo__age)
+			
+			PS：私有字段子类中也不能访问
+		
+	第三部分：数据库
+		1. 引擎 
+		
+		2. 设计表&SQL查询
+			- 每天5个
+			
+		3. 了解：
+			- 视图，虚拟表。
+			- 触发器，
+			- 函数，
+			- 存储过程
+			
+		4. 索引 
+			
+			
+		5. 索引实现原理
+			- B+ tree 
+			- hash 
+			
+		6. 无法命中索引
+			- like
+			- 函数 
+			- >
+			- !=
+			- group by 
+			- or 
+			
+		7. 数据库优化方案
+			- 避免使用select * 
+			- 固定长度在前面
+			- 内存代替表，如：性别等
+			- 读写分离
+			- 分库
+			- 分表
+				- 水平分表
+				- 垂直分表
+			- 命中索引
+			- 组合索引代替索引合并
+			- 尽量使用短索引
+			- 如果取一条数据时，使用limit 1
+				select id,name from tb where name ='alex' limit 1;
+			- 使用连接（JOIN）来代替子查询(Sub-Queries)
+		
+		
+		注意：char/varchar区别
+		
+
+今日内容：
+	1. flask-sqlalchemy
+	2. flask-script
+	3. flask-migrate
+	结果：Flask目录结构
+	4. 爬虫相关
+
+内容详细：
+	1. flask-sqlalchemy
+
+		a. 下载安装
+			pip3 install flask-sqlalchemy
+		b. chun.__init__.py 
+			导入并实例化SQLAlchemy
+			from flask_sqlalchemy import SQLAlchemy
+			db = SQLAlchemy()
+			
+			注意事项：
+				 - 必须在导入蓝图之前
+				 - 必须导入models.py 
+		c. 初始化
+			db.init_app(app)
+			
+		d. 在配置文件中写入配置
+			# ##### SQLALchemy配置文件 #####
+			SQLALCHEMY_DATABASE_URI = "mysql+pymysql://root:123456@127.0.0.1:3306/s9day122?charset=utf8"
+			SQLALCHEMY_POOL_SIZE = 10
+			SQLALCHEMY_MAX_OVERFLOW = 5
+		
+		e. 创建models.py中的类（对应数据库表）
+			chun/models.py 
+				from sqlalchemy.ext.declarative import declarative_base
+				from sqlalchemy import Column
+				from sqlalchemy import Integer,String,Text,Date,DateTime
+				from sqlalchemy import create_engine
+				from chun import db
+
+
+				class Users(db.Model):
+					__tablename__ = 'users'
+
+					id = Column(Integer, primary_key=True)
+					name = Column(String(32), index=True, nullable=False)
+					depart_id = Column(Integer)
+		
+		f. 生成表（使用app上下文）
+			from chun import db,create_app
+
+			app = create_app()
+			app_ctx = app.app_context() # app_ctx = app/g
+			with app_ctx: # __enter__,通过LocalStack放入Local中
+				db.create_all() # 调用LocalStack放入Local中获取app，再去app中获取配置
+
+				
+		g. 基于ORM对数据库进行操作。
+			from flask import Blueprint
+			from chun import db
+			from chun import models
+			us = Blueprint('us',__name__)
+
+
+			@us.route('/index')
+			def index():
+				# 使用SQLAlchemy在数据库中插入一条数据
+				# db.session.add(models.Users(name='高件套',depart_id=1))
+				# db.session.commit()
+				# db.session.remove()
+				result = db.session.query(models.Users).all()
+				print(result)
+				db.session.remove()
+
+				return 'Index'
+		
+	2. flask-script 
+		pip3 install flask-script 
+		
+		功能：
+			a. 增加 runserver
+				from chun import create_app
+				from flask_script import Manager
+
+
+				app = create_app()
+				manager = Manager(app)
+
+				if __name__ == '__main__':
+					# app.run()
+					manager.run()
+					
+			b. 位置传参
+				from chun import create_app
+				from flask_script import Manager
+
+
+				app = create_app()
+				manager = Manager(app)
+
+				@manager.command
+				def custom(arg):
+					"""
+					自定义命令
+					python manage.py custom 123
+					:param arg:
+					:return:
+					"""
+					print(arg)
+
+
+				if __name__ == '__main__':
+					# app.run()
+					manager.run()
+			c. 关键字传参
+				from chun import create_app
+				from flask_script import Manager
+
+
+				app = create_app()
+				manager = Manager(app)
+
+				@manager.option('-n', '--name', dest='name')
+				@manager.option('-u', '--url', dest='url')
+				def cmd(name, url):
+					"""
+					自定义命令
+					执行： python manage.py  cmd -n wupeiqi -u http://www.oldboyedu.com
+					:param name:
+					:param url:
+					:return:
+					"""
+					print(name, url)
+
+
+				if __name__ == '__main__':
+					# app.run()
+					manager.run()
+	
+	
+	3. flask-migrate 
+		pip3 install flask-migrate 
+		依赖：flask-script 
+	
+			#!/usr/bin/env python
+			# -*- coding:utf-8 -*-
+
+			from sansa import create_app
+			from sansa import db
+
+			from flask_script import Manager
+			from flask_migrate import Migrate, MigrateCommand
+
+			app = create_app()
+			manager = Manager(app)
+			Migrate(app, db)
+
+			"""
+			# 数据库迁移命名
+				python manage.py db init
+				python manage.py db migrate
+				python manage.py db upgrade
+			"""
+			manager.add_command('db', MigrateCommand)
+
+
+			if __name__ == '__main__':
+				manager.run()
+				# app.run()
+
+
+	4. 找到项目使用的所有组件和版本。
+		pip install pipreqs
+		
+		pipreqs ./ --encoding=utf-8 
+		
+	
+	5. 虚拟环境 
+		pip3 install virtualenv
+		
+		
+		virtualenv env1  --no-site-packages
+		
+		activate
+		deactivate
+		
+	
+	6. 爬虫  
+	
+		任务：爬取汽车之家器
+			import requests
+			from bs4 import BeautifulSoup
+
+			response = requests.get("https://www.autohome.com.cn/news/")
+			response.encoding = 'gbk'
+
+			soup = BeautifulSoup(response.text,'html.parser')
+
+			div = soup.find(name='div',attrs={'id':'auto-channel-lazyload-article'})
+
+			li_list = div.find_all(name='li')
+
+			for li in li_list:
+
+				title = li.find(name='h3')
+				if not title:
+					continue
+				p = li.find(name='p')
+				a = li.find(name='a')
+
+				print(title.text)
+				print(a.attrs.get('href'))
+				print(p.text)
+
+				img = li.find(name='img')
+				src = img.get('src')
+				src = "https:" + src
+				print(src)
+
+				# 再次发起请求，下载图片
+				file_name = src.rsplit('/',maxsplit=1)[1]
+				ret = requests.get(src)
+				with open(file_name,'wb') as f:
+					f.write(ret.content)
+
+	
+		模块：
+			requests，伪造浏览器发起Http请求
+			bs4，将html格式的字符串解析成对象，对象.find/find_all 
+	
+	
+作业：
+	Flask程序实现爬虫采集以展示
+	功能：
+		1. Flask目录结构 
+		2. SQLAlchemy存储数据
+			页面1：
+				数据框							    按钮
+                https://www.autohome.com.cn/news/
+				
+				标题、简介、图片路径、文章来源、文章路径
+			页面2：
+				展示新闻列表，点击跳转到汽车之家。
+				
+			可选：翻页获取
+	可选：爬取煎蛋网
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	

@@ -1,0 +1,18 @@
+{% extends "demo2/base/base.html" %}
+
+{#{% load staticfiles %}#}
+{% block title %}demo_static{% endblock %}
+
+{% block content %}
+{% include "demo2/pages/demo_upload.html" %}
+{% endblock %}
+
+{% block chosen_js_file %}
+
+{#<script type="text/javascript" src="/static/js/angular-controller/demo_2/demo_upload_ctrl.js"></script>#}
+<!-- end -->
+<script src="/static/ng-file-upload-bower/ng-file-upload.min.js"></script>
+<script src="static/js/angular-controller/demo_2/demo_upload_ctrl.js"></script>
+
+
+{% endblock %}

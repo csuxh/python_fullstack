@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link href="/static/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom styles for this template -->
+    <link href="/static/dashboard.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/fontawesome/css/font-awesome.min.css">
+</head>
+<body>
+<div class="container">
+    <form action="/d73_forms/form2/" method="post">
+        {% csrf_token %}
+        <div class="input-group">
+{#            接收后台传过来的form对象，自动生成input标签#}
+            用户名{{ form.user }}
+{#            从后台传过来的error是字典，直接{{ error.user.0 }}呈现错误信息#}
+{#            如果后台返回了错误信息，将错误信息放入span标签，在页面显示，否则不显示#}
+            {% if error.user.0 %}
+            <span>{{ error.user.0 }}</span>
+            {% endif %}
+        </div>
+        <div class="input-group">
+            密码{{ form.pwd }}
+            {% if error.pwd.0 %}
+            <span>{{ error.pwd.0 }}</span>
+            {% endif %}
+        </div>
+        <div class="input-group">
+            邮箱{{ form.email }}
+            {% if error.email.0 %}
+            <span>{{ error.email.0 }}</span>
+            {% endif %}
+        </div>
+         <div class="input-group">
+            备注{{ form.memo }}
+            {% if error.memo.0 %}
+            <span>{{ error.memo.0 }}</span>
+            {% endif %}
+        </div>
+             <div class="input-group">
+            书籍类型{{ form.book_type }}
+            {% if error.book_type.0 %}
+            <span>{{ error.book_type.0 }}</span>
+            {% endif %}
+        </div>
+
+        <div>
+            <input type="submit" value="提交" />
+        </div>
+    </form>
+</div>
+</body>
+</html>

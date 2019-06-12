@@ -1,0 +1,111 @@
+<?xml version="1.0" ?>
+<eExact xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="eExact-Schema.xsd">
+  <GLEntries>
+    <GLEntry entry="">
+      <Journal code="280" />
+      <FinEntryLine number="" type="" subtype="T">
+        <Date>2018-08-01</Date>
+        <FinYear number="18" />
+        <FinPeriod number="09" />
+        <GLAccount code="1141002" />
+        <Description>272-70306736,WUH18070005</Description>
+        <Debtor code="" />
+        <Creditor code="302060" />
+        <Project code="DFWAP18080014" />
+        <Costcenter code="AI" />
+        <Costunit code="MO" />
+        <Amount>
+          <Currency code="USD" />
+          <Debit>380.16</Debit>
+          <Credit>0</Credit>
+          <VAT code="" />
+        </Amount>
+        <ForeignAmount>
+          <Currency code="USD" />
+          <Debit>380.16</Debit>
+          <Credit>0</Credit>
+          <Rate>1.0000</Rate>
+        </ForeignAmount>
+        <FinReferences TransactionOrigin="I">
+          <YourRef>DFWAP18080014</YourRef>
+          <DocumentDate>2018-09-06</DocumentDate>
+        </FinReferences>
+        <FreeFields>
+          <FreeTexts>
+            <FreeText number="1">AI2018070031DFW</FreeText>
+            <FreeText number="2">272-70306736</FreeText>
+            <FreeText number="3">WUH18070005</FreeText>
+          </FreeTexts>
+        </FreeFields>
+        <Payment>
+          <PaymentMethod code="C" />
+          <Reference>DFWAP18080014</Reference>
+        </Payment>
+      </FinEntryLine>
+      <FinEntryLine number="" type="" subtype="T">
+        <Date>2018-08-01</Date>
+        <FinYear number="18" />
+        <FinPeriod number="09" />
+        <GLAccount code="2112250" />
+        <Description>272-70306736,WUH18070005</Description>
+        <Debtor code="" />
+        <Creditor code="302060" />
+        <Project code="DFWAP18080014" />
+        <Costcenter code="AI" />
+        <Costunit code="" />
+        <Amount>
+          <Currency code="USD" />
+          <Debit>0</Debit>
+          <Credit>380.16</Credit>
+          <VAT code="" />
+        </Amount>
+        <ForeignAmount>
+          <Currency code="USD" />
+          <Debit>0</Debit>
+          <Credit>380.16</Credit>
+          <Rate>1.0000</Rate>
+        </ForeignAmount>
+        <FinReferences TransactionOrigin="I">
+          <YourRef>DFWAP18080014</YourRef>
+          <DocumentDate>2018-09-06</DocumentDate>
+        </FinReferences>
+        <FreeFields>
+          <FreeTexts>
+            <FreeText number="1">AI2018070031DFW</FreeText>
+            <FreeText number="2">272-70306736</FreeText>
+            <FreeText number="3">WUH18070005</FreeText>
+          </FreeTexts>
+        </FreeFields>
+        <Payment>
+          <PaymentMethod code="C" />
+          <Reference>DFWAP18080014</Reference>
+        </Payment>
+      </FinEntryLine>
+      <PaymentTerms>
+        <PaymentTerm type="K" termType="W" status="C" entry="" paymentType="C" paymentMethod="T">
+          <Description>272-70306736,WUH18070005</Description>
+          <GLOffset code="2112250" />
+          <Debtor code="" />
+          <Creditor code="302060" />
+          <Amount>
+            <Currency code="USD" />
+            <Debit>0.0</Debit>
+            <Credit>380.16</Credit>
+            <VAT code="" />
+          </Amount>
+          <ForeignAmount>
+            <Currency code="USD" />
+            <Debit>0.0</Debit>
+            <Credit>380.16</Credit>
+            <Rate>1.0000</Rate>
+          </ForeignAmount>
+          <Reference>DFWAP18080014</Reference>
+          <YourRef>DFWAP18080014</YourRef>
+          <InvoiceDate>2018-08-01</InvoiceDate>
+          <ReportingDate>2018-09-06</ReportingDate>
+          <InvoiceDueDate>2018-08-01</InvoiceDueDate>
+        </PaymentTerm>
+      </PaymentTerms>
+    </GLEntry>
+  </GLEntries>
+</eExact>

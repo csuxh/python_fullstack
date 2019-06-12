@@ -1,0 +1,30 @@
+{% extends "layout.html"%}
+
+
+{% block content %}
+    {{users.0}}
+    {{users[0]}}
+    {{txt}}
+    <!--{{txt|safe}}-->
+    {{func(6)}}
+    {{sb(1,9)}}
+    {{ 1|db(2,3) }}
+    {% if 1|db(2,3) %}
+        <div>666</div>
+    {% else %}
+        <div>999</div>
+    {% endif %}
+
+    {% include "form.html" %}
+
+    {% macro ccccc(name, type='text', value='') %}
+        <h1>宏</h1>
+        <input type="{{ type }}" name="{{ name }}" value="{{ value }}">
+        <input type="submit" value="提交">
+    {% endmacro %}
+
+    {{ ccccc('n1') }}
+
+    {{ ccccc('n2') }}
+
+{% endblock %}

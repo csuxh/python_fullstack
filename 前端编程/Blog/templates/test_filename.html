@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<!-- saved from url=(0066)http://nervgh.github.io/pages/angular-file-upload/examples/simple/ -->
+<html id="ng-app" ng-app="app" class="ng-scope">
+<!-- id="ng-app" IE<8 -->
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Simple example</title>
+    <link rel="stylesheet" href="/static/css/libs/bootstrap.min.css">
+    <script src="/static/jquery-3.3.1.js"></script>
+    {#        <!-- Fix for old browsers -->#}
+    {#        <script src="./file_upload_files/es5-shim.min.js"></script>#}
+    {#        <script src="./file_upload_files/es5-sham.min.js"></script>#}
+    {#        <script src="./file_upload_files/jquery-1.8.3.min.js"></script>#}
+    {#        <script src="./file_upload_files/console-sham.js"></script>#}
+    {##}
+    <script src="/static/bootstrap.min.js"></script>
+
+    <!--<script src="../bower_components/angular/angular.js"></script>-->
+    <script src="/static/angular.min.js"></script>
+    {#        <style type="text/css">@charset "UTF-8";[ng\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak{display:none;}ng\:form{display:block;}</style>#}
+    <script src="/static/angular-file-upload.min.js"></script>
+    <script src="/static/controllers.js"></script>
+
+    <style>
+        .my-drop-zone {
+            border: dotted 3px lightgray;
+        }
+
+        .nv-file-over {
+            border: dotted 3px red;
+        }
+
+        /* Default class applied to drop zones on over */
+        .another-file-over-class {
+            border: dotted 3px green;
+        }
+
+        html, body {
+            height: 100%;
+        }
+    </style>
+
+</head>
+
+<!-- 1. nv-file-drop="" uploader="{Object}" options="{Object}" filters="{String}" -->
+<body ng-controller="uploadController">
+
+<form class="form-horizontal" name="form">
+    <div class="form-line">
+        <label>请选择证书文件：</label><span class="small-tip">证书文件只支持.pem格式，文件大小1M以内</span>
+        <div class="choose-file-area">
+            <input class="file-name" type="text" readonly="readonly" ng-model="fileItem.name"/>
+            <a href="javascript:;" class="choose-book">
+                <input type="file" name="certificate" nv-file-select uploader="uploader" ng-click="clearItems()"/>浏览
+            </a>
+        </div>
+    </div>
+    <div class="form-line">
+        <label>请选择私钥文件：</label><span class="small-tip">私钥文件只支持.key格式，文件大小1M以内</span>
+        <div class="choose-file-area">
+            <input class="file-name" type="text" readonly="readonly" ng-model="fileItem1.name"/>
+            <a href="javascript:;" class="choose-key">
+                <input type="file" name="key" nv-file-select uploader="uploader1" ng-click="clearItems1()"/>浏览
+            </a>
+        </div>
+    </div>
+    <button type="submit" ng-click="UploadFile()">提交</button>
+</form>
+
+<script src="/static/myJS/test4.js">
+
+
+</script>
+
+</body>
+</html>

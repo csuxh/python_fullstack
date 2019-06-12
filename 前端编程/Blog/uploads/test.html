@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <base href="">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>demo_server_deploy</title>
+    <link href="/static/css/libs/bootstrap.min.css" rel="stylesheet">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <!--append watch to the browser URL, then refresh the page. -->
+    <script type="text/javascript" src="/static/jquery-3.3.1.js"></script>
+
+</head>
+<body ng-app="myApp">
+<div class="container">
+    <div class="navbar navbar-default">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="">运维管理平台</a>
+        </div>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li class="active dropdown">
+                    <a href="" class="dropdown-toggle" data-toggle="dropdown">Ansible <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="/file_upload/">文件上传</a></li>
+
+                        <li><a href="/demo2/demo_server_deploy/">主机管理</a></li>
+                        <li><a href="">执行YML脚本</a></li>
+                        <li><a href="/demo2/demo_config_center/">YML配置中心</a></li>
+                    </ul>
+                </li>
+                <li class="active dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">报表管理<b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li class="active"><a href="#">文件上传</a></li>
+                        <li><a href="#">Uploads only images (with canvas preview)</a></li>
+                        <li><a href="#">Without bootstrap example</a></li>
+                    </ul>
+                </li>
+                <li><a href="">View on Github</a></li>
+
+                <li><a href="">Download</a></li>
+            </ul>
+        </div>
+    </div>
+
+
+    <div class="container-fluid">
+        <div class="col-md-12 column">
+        </div>
+
+        <div class="col-md-12">
+
+            <div class="row col-md-12">
+                <div class="col-md-12">
+                    <table class="table table-bordered table-striped table-hover">
+                        <thead>
+                        <tr class="info">
+                            <th class="col-md-2 text-muted">主机名称</th>
+                            <th class="col-md-2 text-muted">组名</th>
+                            <th class="col-md-1 text-muted">主机ip</th>
+                            <th class="col-md-1 text-muted">用户名</th>
+                            <th class="col-md-1 text-muted">端口</th>
+                            <th class="col-md-2 text-muted">机器类型</th>
+                            <th class="col-md-3 text-muted">操作</th>
+                        </tr>
+                        </thead>
+
+
+                        <tbody id="host_info"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="col-md-12">
+                <div class="col-md-offset-5">
+                    <dir-pagination-controls pagination-id="servers_list"></dir-pagination-controls>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- put here load faster -->
+    <!-- here is the main js file that should be load -->
+
+    <script type="text/javascript" src="/static/js/libs/angular/angular.min.js"></script>
+
+    <script type="text/javascript" src="/static/js/libs/underscore/Underscore.js"></script>
+    <script type="text/javascript" src="/static/js/libs/angular/dirPagination.js"></script>
+
+
+    <script type="text/javascript" src="/static/js/angular-factory/main.js"></script>
+
+    <!-- here is the other page's js -->
+
+
+    <script src="/static/myJS/host_list.js"></script>
+
+    <!-- end -->
+
+
+</div>
+</body>
+</html>

@@ -1,0 +1,372 @@
+s9day116 
+
+内容回顾：
+	1. django和flask区别？
+	2.什么是wsgi？
+		web服务网关接口，wsgi是一个协议，实现该写一个的模块：
+			- wsgiref
+			- werkzeug
+		实现其协议的模块本质上就是socket服务端用于接收用户请求，并处理。
+		一般web框架基于wsgi实现，这样实现关注点分离。
+		
+		wsgiref示例：
+			from wsgiref.simple_server import make_server
+ 
+			def run_server(environ, start_response):
+				start_response('200 OK', [('Content-Type', 'text/html')])
+				return [bytes('<h1>Hello, web!</h1>', encoding='utf-8'), ]
+			 
+			 
+			if __name__ == '__main__':
+				httpd = make_server('127.0.0.1', 8000, run_server)
+				httpd.serve_forever()
+		
+		werkzeug示例：
+			from werkzeug.wrappers import Response
+			from werkzeug.serving import run_simple
+
+			def run_server(environ, start_response):
+				response = Response('hello')
+				return response(environ, start_response)
+
+			if __name__ == '__main__':
+				run_simple('127.0.0.1', 8000, run_server)
+
+		Flask源码入口：
+			from werkzeug.wrappers import Response
+			from werkzeug.serving import run_simple
+
+			class Flask(object):
+				def __call__(self,environ, start_response):
+					response = Response('hello')
+					return response(environ, start_response)
+
+				def run(self):
+					run_simple('127.0.0.1', 8000, self)
+
+
+
+			app = Flask()
+
+			if __name__ == '__main__':
+				app.run()
+	
+	3. Flask提供功能
+		- 配置文件
+			- 所有配置都在app.config中
+			- app.config["xx"] = 123
+			- app.config.from_object("类的路径")
+			- 应用：importlib、getattr
+				- django中间件
+				- rest framework全局配置
+		- session 
+			- 加密后放置在用户浏览器的cookie中。
+			- 流程：
+				- 请求到来
+				- 视图函数
+				- 请求结束
+			- 配置文件 
+		- 闪现
+			- 基于session实现
+		- 路由
+			- 装饰器（带参数）
+			- 自定义装饰器放下面
+			- 参数 
+			- url_for
+		- 视图
+			- FBV
+		- 请求和响应
+			- 请求：request
+			- 响应: 4种
+		- 模板
+			- ...
+		- 特殊装饰器
+			- before_first_request
+			- before_request
+			- after_request
+			- template_global()
+			- template_filter()
+			- errorhandler(404)
+		- 中间件	
+	
+今日内容：
+	1. 路由+视图
+	2. session实现原理（源码）
+	3. 蓝图
+	4. threading.local
+	5. 上下文管理（第一次）
+	
+	
+
+内容详细：
+	1. 路由+视图
+		a. 路由设置的两种方式：
+			@app.route('/xxx')
+				def index():
+					return "index"
+
+			
+			def index():
+				return "index"
+			app.add_url_rule("/xxx",None,index)
+			
+			注意事项：
+				- 不用让endpoint重名
+				- 如果重名函数也一定要相同。
+		b. 参数 
+			rule,                       URL规则
+			view_func,                  视图函数名称
+			endpoint=None,              名称，用于反向生成URL，即： url_for('名称')
+			methods=None,               允许的请求方式，如：["GET","POST"]
+			strict_slashes=None,        对URL最后的 / 符号是否严格要求，
+			redirect_to=None,           重定向到指定地址
+
+			defaults=None,              默认值,当URL中无参数，函数需要参数时，使用defaults={'k':'v'}为函数提供参数
+			subdomain=None,             子域名访问
+		c. CBV 
+			import functools
+			from flask import Flask,views
+			app = Flask(__name__)
+
+
+			def wrapper(func):
+				@functools.wraps(func)
+				def inner(*args,**kwargs):
+					return func(*args,**kwargs)
+
+				return inner
+
+
+
+			class UserView(views.MethodView):
+				methods = ['GET']
+				decorators = [wrapper,]
+
+				def get(self,*args,**kwargs):
+					return 'GET'
+
+				def post(self,*args,**kwargs):
+					return 'POST'
+
+			app.add_url_rule('/user',None,UserView.as_view('uuuu'))
+
+			if __name__ == '__main__':
+				app.run()
+		d. 自定义正则 
+			from flask import Flask,url_for
+
+			app = Flask(__name__)
+
+			# 步骤一：定制类
+			from werkzeug.routing import BaseConverter
+			class RegexConverter(BaseConverter):
+				"""
+				自定义URL匹配正则表达式
+				"""
+
+				def __init__(self, map, regex):
+					super(RegexConverter, self).__init__(map)
+					self.regex = regex
+
+				def to_python(self, value):
+					"""
+					路由匹配时，匹配成功后传递给视图函数中参数的值
+					:param value:
+					:return:
+					"""
+					return int(value)
+
+				def to_url(self, value):
+					"""
+					使用url_for反向生成URL时，传递的参数经过该方法处理，返回的值用于生成URL中的参数
+					:param value:
+					:return:
+					"""
+					val = super(RegexConverter, self).to_url(value)
+					return val
+
+			# 步骤二：添加到转换器
+			app.url_map.converters['reg'] = RegexConverter
+
+			"""
+			1. 用户发送请求
+			2. flask内部进行正则匹配
+			3. 调用to_python(正则匹配的结果)方法
+			4. to_python方法的返回值会交给视图函数的参数
+
+			"""
+
+			# 步骤三：使用自定义正则
+			@app.route('/index/<reg("\d+"):nid>')
+			def index(nid):
+				print(nid,type(nid))
+
+				print(url_for('index',nid=987))
+				return "index"
+
+			if __name__ == '__main__':
+				app.run()
+		
+	2. session实现原理（源码）
+	
+		作业：session流程图（加分项）
+		
+	3. 蓝图
+		目标：给开发者提供目录结构
+		
+		其他：
+			- 自定义模板、静态文件
+			- 某一类url添加前缀
+			- 给一类url添加before_request
+		
+	4. threading.local【和flask无任何关系】
+		作用：为每个线程创建一个独立的空间，使得线程对自己的空间中的数据进行操作（数据隔离）。
+			import threading
+			from threading import local
+			import time
+
+			obj = local()
+
+
+			def task(i):
+				obj.xxxxx = i
+				time.sleep(2)
+				print(obj.xxxxx,i)
+
+			for i in range(10):
+				t = threading.Thread(target=task,args=(i,))
+				t.start()
+
+		问题：
+			- 如何获取一个线程的唯一标记？ threading.get_ident()
+			- 根据字典自定义一个类似于threading.local功能？
+				import time
+				import threading
+
+				DIC = {}
+
+				def task(i):
+					ident = threading.get_ident()
+					if ident in DIC:
+						DIC[ident]['xxxxx'] = i
+					else:
+						DIC[ident] = {'xxxxx':i }
+					time.sleep(2)
+
+					print(DIC[ident]['xxxxx'],i)
+
+				for i in range(10):
+					t = threading.Thread(target=task,args=(i,))
+					t.start()
+				
+			- 根据字典自定义一个为每个协程开辟空间进行存取数据。
+			
+				import time
+				import threading
+				import greenlet
+
+				DIC = {}
+
+				def task(i):
+					
+					# ident = threading.get_ident()
+					ident = greenlet.getcurrent()
+					if ident in DIC:
+						DIC[ident]['xxxxx'] = i
+					else:
+						DIC[ident] = {'xxxxx':i }
+					time.sleep(2)
+
+					print(DIC[ident]['xxxxx'],i)
+
+				for i in range(10):
+					t = threading.Thread(target=task,args=(i,))
+					t.start()
+			
+			- 通过getattr/setattr 构造出来 threading.local的加强版（协程）
+				import time
+				import threading
+				try:
+					import greenlet
+					get_ident =  greenlet.getcurrent
+				except Exception as e:
+					get_ident = threading.get_ident
+
+				class Local(object):
+					DIC = {}
+
+					def __getattr__(self, item):
+						ident = get_ident()
+						if ident in self.DIC:
+							return self.DIC[ident].get(item)
+						return None
+
+					def __setattr__(self, key, value):
+						ident = get_ident()
+						if ident in self.DIC:
+							self.DIC[ident][key] = value
+						else:
+							self.DIC[ident] = {key:value}
+						
+
+				obj = Local()
+
+				def task(i):
+					obj.xxxxx = i
+					time.sleep(2)
+					print(obj.xxxxx,i)
+
+				for i in range(10):
+					t = threading.Thread(target=task,args=(i,))
+					t.start()
+			
+	5. 上下文管理（第一次）
+		请求到来时候：
+			# ctx = RequestContext(self, environ) # self是app对象，environ请求相关的原始数据
+			# ctx.request = Request(environ)
+			# ctx.session = None
+			
+			# 将包含了request/session的ctx对象放到“空调”
+				{
+					1232：{ctx:ctx对象}
+					1231：{ctx:ctx对象}
+					1211：{ctx:ctx对象}
+					1111：{ctx:ctx对象}
+					1261：{ctx:ctx对象}
+				}
+				
+		视图函数：
+			from flask import reuqest,session 
+			
+			request.method 
+			
+			
+		请求结束：
+			根据当前线程的唯一标记，将“空调”上的数据移除。
+			
+	
+	
+作业： 
+	1. 蓝图 
+	提高：
+		- session流程图（加分项）
+		- local 
+		- 上下文管理 
+	
+	
+
+
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	

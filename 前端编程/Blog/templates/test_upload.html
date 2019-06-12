@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<!-- saved from url=(0066)http://nervgh.github.io/pages/angular-file-upload/examples/simple/ -->
+<html id="ng-app" ng-app="app" class="ng-scope">
+<!-- id="ng-app" IE<8 -->
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>文件上传</title>
+    <link rel="stylesheet" href="/static/css/libs/bootstrap.min.css">
+    <script src="/static/jquery-3.3.1.js"></script>
+    <script src="/static/bootstrap.min.js"></script>
+
+    <script src="/static/angular.min.js"></script>
+    <script src="/static/ng-file-upload-bower/ng-file-upload.min.js"></script>
+{#    <script src="/static/angular-file-upload.min.js"></script>#}
+{#    <script src="/static/controllers.js"></script>#}
+
+
+</head>
+<body >
+<div class="container" ng-app="fileUpload">
+    <div class="col-md-3">
+        {#    Upload on form submit or button click#}
+        <form ng-app="fileUpload" ng-controller="MyCtrl" name="form">
+            Single Image with validations
+            <div class="button" ngf-select ng-model="file" name="file" ngf-pattern="'image/*'"
+                 ngf-accept="'image/*'" ngf-max-size="20MB" ngf-min-height="100"
+                 ngf-resize="{width: 100, height: 100}">Select
+            </div>
+            Multiple files
+            <div class="button" ngf-select ng-model="files" ngf-multiple="true">Select</div>
+            Drop files:
+            <div ngf-drop ng-model="files" class="drop-box">Drop</div>
+            <button type="submit" ng-click="submit()">submit</button>
+        </form>
+    </div>
+
+</div>
+<script src="/static/myJS/test_upload.js"></script>
+</body>
+</html>

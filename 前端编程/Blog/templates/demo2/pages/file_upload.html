@@ -1,0 +1,103 @@
+<div  ng-controller="AppController" nv-file-drop="" uploader="uploader" filters="queueLimit, customFilter" class="row ng-scope">
+
+                <div class="col-md-3">
+
+                    <h3>请拖拽文件到此处</h3>
+
+                    <div ng-show="uploader.isHTML5">
+                        <!-- 3. nv-file-over uploader="link" over-class="className" -->
+                        <div class="well my-drop-zone" nv-file-over="" uploader="uploader">
+                            Base drop zone
+                        </div>
+
+                        <!-- Example: nv-file-drop="" uploader="{Object}" options="{Object}" filters="{String}" -->
+                        <div nv-file-drop="" uploader="uploader" options="{ url: &#39;/foo&#39; }">
+                            <div nv-file-over="" uploader="uploader" over-class="another-file-over-class" class="well my-drop-zone">
+                                Another drop zone with its own settings
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Example: nv-file-select="" uploader="{Object}" options="{Object}" filters="{String}" -->
+                    Multiple
+                    <input type="file" nv-file-select="" uploader="uploader" multiple=""><br>
+
+                    Single
+                    <input type="file" nv-file-select="" uploader="uploader">
+                </div>
+
+                <div class="col-md-9" style="margin-bottom: 40px">
+
+                    <h3>Upload queue</h3>
+                    <p class="ng-binding" ng-bind="'Queue Length:' + ' ' +uploader.queue.length"></p>
+
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th width="50%">文件名</th>
+                                <th ng-show="uploader.isHTML5">大小</th>
+                                <th ng-show="uploader.isHTML5">进度</th>
+                                <th>状态</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="item in uploader.queue" >
+                                <td ng-show="uploader.isHTML5" ><span ng-bind="item.file.name"></span></td>
+                                <td ng-show="uploader.isHTML5" ><span ng-bind="item.file.size"></span></td>
+                                <td ng-show="uploader.isHTML5">
+                                    <div class="progress" style="margin-bottom: 0;">
+                                        <div class="progress-bar" role="progressbar" ng-style="{ &#39;width&#39;: item.progress + &#39;%&#39; }" style="width: 0%;"></div>
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    <span ng-show="item.isSuccess" style="display: none;"><i class="glyphicon glyphicon-ok"></i></span>
+                                    <span ng-show="item.isCancel" style="display: none;"><i class="glyphicon glyphicon-ban-circle"></i></span>
+                                    <span ng-show="item.isError" style="display: none;"><i class="glyphicon glyphicon-remove"></i></span>
+                                </td>
+                                <td nowrap="">
+                                    <button type="button" class="btn btn-success btn-xs" ng-click="item.upload()" ng-disabled="item.isReady || item.isUploading || item.isSuccess">
+                                        <span class="glyphicon glyphicon-upload"></span> Upload
+                                    </button>
+                                    <button type="button" class="btn btn-warning btn-xs" ng-click="item.cancel()" ng-disabled="!item.isUploading" disabled="disabled">
+                                        <span class="glyphicon glyphicon-ban-circle"></span> Cancel
+                                    </button>
+                                    <button type="button" class="btn btn-danger btn-xs" ng-click="item.remove()">
+                                        <span class="glyphicon glyphicon-trash"></span> Remove
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div>
+                        <div>
+                            Queue progress:
+                            <div class="progress" style="">
+                                <div class="progress-bar" role="progressbar" ng-style="{ &#39;width&#39;: uploader.progress + &#39;%&#39; }" style="width: 0%;"></div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-success btn-s" ng-click="uploader.uploadAll()" ng-disabled="!uploader.getNotUploadedItems().length">
+                            <span class="glyphicon glyphicon-upload"></span> Upload all
+                        </button>
+                        <button type="button" class="btn btn-warning btn-s" ng-click="uploader.cancelAll()" ng-disabled="!uploader.isUploading" disabled="disabled">
+                            <span class="glyphicon glyphicon-ban-circle"></span> Cancel all
+                        </button>
+                        <button type="button" class="btn btn-danger btn-s" ng-click="uploader.clearQueue()" ng-disabled="!uploader.queue.length">
+                            <span class="glyphicon glyphicon-trash"></span> Remove all
+                        </button>
+                        &nbsp;&nbsp;
+                        <button type="button" class="btn btn-default" ng-click="delever_file()" ng-model="filename">Ansible分发</button>
+                    </div>
+
+{#                    <div>#}
+{#                        <div>#}
+{#                            <button type="button" class="btn btn-default" ng-click="delever_file">#}
+{#                                分发#}
+{#                            </button>#}
+{#                        </div>#}
+{#                    </div>#}
+
+                </div>
+
+            </div>
