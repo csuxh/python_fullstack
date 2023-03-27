@@ -1,4 +1,4 @@
-redis==2.10.6
+redis==4.5.3
 alembic==0.9.9
 Flask_Script==2.0.6
 Flask==1.0.2
